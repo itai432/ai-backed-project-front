@@ -15,6 +15,9 @@ const Navbar: React.FC = () => {
         <li>
           <Link to="/register">Register</Link>
         </li>
+        <li>
+          <Link to="/database-config">Database Config</Link>
+        </li>
       </ul>
     </nav>
   );
