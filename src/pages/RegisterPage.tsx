@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import '../style/RegisterPage.scss';
 import { FaDatabase } from 'react-icons/fa';
+import { register } from '../services/authService';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log('Username:', username);
-    console.log('Password:', password);
-    console.log('Email:', email);
+    try {
+      await register(email, username, password);  // Correct order: email, username, password
+      alert('Registration successful');
+    } catch (err: any) {
+      if (err.response && err.response.status === 409) {
+        setError('Username or email already exists');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
+    }
   };
 
   return (
@@ -21,6 +30,7 @@ const RegisterPage: React.FC = () => {
           <FaDatabase className="db-icon" />
           Register
         </h2>
+        {error && <p className="error-message">{error}</p>}
         <div className="form-group">
           <label>Email</label>
           <input
@@ -48,7 +58,6 @@ const RegisterPage: React.FC = () => {
             required
           />
         </div>
-
         <button type="submit">Register</button>
       </form>
     </div>

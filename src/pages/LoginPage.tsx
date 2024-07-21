@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import '../style/LoginPage.scss';
-import { Link } from 'react-router-dom';
+import { login } from '../services/authService';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log('Username:', username);
-    console.log('Password:', password);
+    await login(username, password);
   };
 
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h2>
-          Sign In</h2>
+        <h2>Sign In</h2>
         <div className="form-group">
           <label>Username</label>
           <input
@@ -36,9 +34,6 @@ const LoginPage: React.FC = () => {
           />
         </div>
         <button type="submit">Sign In</button>
-        <p>Don't have a User? 
-      <Link to="/register">Register</Link>
-      </p>
       </form>
     </div>
   );
