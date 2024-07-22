@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import DatabaseConfigPage from './pages/DatabaseConfigPage';
 import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css'; 
 
 const App: React.FC = () => {
@@ -14,8 +15,8 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/database-config" element={<DatabaseConfigPage />} />
+        <Route path="/" element={<ProtectedRoute element={<HomePage />} />} />
+        <Route path="/database-config" element={<ProtectedRoute element={<DatabaseConfigPage />} />} />
       </Routes>
     </Router>
   );

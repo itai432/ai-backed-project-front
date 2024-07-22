@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import '../style/RegisterPage.scss';
 import { FaDatabase } from 'react-icons/fa';
 import { register } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      await register(email, username, password);  // Correct order: email, username, password
+      await register(email, username, password); 
       alert('Registration successful');
+      navigate('/');
     } catch (err: any) {
       if (err.response && err.response.status === 409) {
         setError('Username or email already exists');
