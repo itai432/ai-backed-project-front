@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../style/DatabaseConfigPage.scss';
 import { FaDatabase } from 'react-icons/fa';
-import { testConnection } from '../services/authService';
+import { connectToDatabase } from '../services/authService';
 
 const DatabaseConfigPage: React.FC = () => {
   const [url, setUrl] = useState('');
@@ -12,7 +12,11 @@ const DatabaseConfigPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await testConnection(url, username, password);
+      const token = localStorage.getItem('jwt');
+      if (!token) {
+        throw new Error('No token found');
+}
+      const response = await connectToDatabase(url, username, password);
       setMessage(response.data.message);
     } catch (error:any) {
       setMessage('Connection failed: ' + error.message);

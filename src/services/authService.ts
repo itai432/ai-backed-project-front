@@ -13,7 +13,7 @@ export const login = (username: string, password: string) => {
 export const testConnection = (url: string, username: string, password: string) => {
   const token = getToken(); 
   return axios.post(
-      `${API_URL}/test-connection`,
+      `${API_URL}/connect-db`,
       { url, username, password },
       {
           headers: {
@@ -47,4 +47,39 @@ export const isAuthenticated = () => {
 
 export const logout = () => {
   localStorage.removeItem('jwt');
+};
+
+export const connectToDatabase = async (url: string, username: string, password: string) => {
+  try {
+    const token = getToken(); 
+    const response = await axios.post(
+      `${API_URL}/connect-db`,
+      {
+        url,
+        username,
+        password
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+      },
+      }
+    );
+    
+    const dbToken = response.data.token;
+    console.log(response.data);
+    if (dbToken) {
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 3);
+      const tokenData = {
+        token: dbToken,
+        expiry: expiryDate.toISOString(),
+      };
+
+      localStorage.setItem('dbToken', JSON.stringify(tokenData));
+    }
+    return response;
+  } catch (error) {
+    throw new Error("connecting to database");
+}
 };
