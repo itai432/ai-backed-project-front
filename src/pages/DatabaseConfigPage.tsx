@@ -17,7 +17,7 @@ const DatabaseConfigPage: React.FC = () => {
         throw new Error('No token found');
 }
       const response = await connectToDatabase(url, username, password);
-      setMessage(response.data.message);
+      setMessage(response?.data);
     } catch (error:any) {
       setMessage('Connection failed: ' + error.message);
     }

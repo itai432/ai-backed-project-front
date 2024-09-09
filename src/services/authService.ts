@@ -1,26 +1,14 @@
 import axios from 'axios';
+import { Message } from '../pages/HomePage';
 
-const API_URL = 'http://localhost:8080/api';
+
 
 export const register = (email: string, username: string, password: string) => {
-  return axios.post(`${API_URL}/register`, { email, username, password });
+  return axios.post(`/register`, { email, username, password });
 };
 
 export const login = (username: string, password: string) => {
-  return axios.post(`${API_URL}/login`, { username, password });
-};
-
-export const testConnection = (url: string, username: string, password: string) => {
-  const token = getToken(); 
-  return axios.post(
-      `${API_URL}/connect-db`,
-      { url, username, password },
-      {
-          headers: {
-              Authorization: `Bearer ${token}`, 
-          },
-      }
-  );
+  return axios.post(`/login`, { username, password });
 };
 
 export const setTokenWithExpiry = (token: string, expiry: number) => {
@@ -53,7 +41,7 @@ export const connectToDatabase = async (url: string, username: string, password:
   try {
     const token = getToken(); 
     const response = await axios.post(
-      `${API_URL}/connect-db`,
+      `/connect-db`,
       {
         url,
         username,
@@ -81,5 +69,40 @@ export const connectToDatabase = async (url: string, username: string, password:
     return response;
   } catch (error) {
     throw new Error("connecting to database");
+}
+};
+
+export const askChatGPT = async (
+  userInput: string,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+) => {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error("No token found");
+    }
+
+    const response = await axios.get(
+      "/Ask/askChatGPT",
+      {
+        params: { userInput },
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response);
+    const chatGPTMessage: Message = {
+      type: "chatgpt",
+      content: response.data,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    setMessages((prevMessages) => [...prevMessages, chatGPTMessage]);
+  } catch (error: any) {
+    console.error("Error fetching data:", error);
+  } finally {
+    setLoading(false);
 }
 };

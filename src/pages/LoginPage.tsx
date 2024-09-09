@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../style/LoginPage.scss';
-import { login, setTokenWithExpiry } from '../services/authService';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../style/LoginPage.scss";
+import { login, setTokenWithExpiry } from "../services/authService";
 
 const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -14,14 +14,14 @@ const LoginPage: React.FC = () => {
     try {
       const response = await login(username, password);
       const token = response.data.token;
-      setTokenWithExpiry(token, 1800000);
-      alert('Login successful');
-      navigate('/');
+      setTokenWithExpiry(token, 180000000000);
+      alert("Login successful");
+      navigate("/");
     } catch (err: any) {
       if (err.response && err.response.status === 401) {
-        setError('Invalid username or password');
+        setError("Invalid username or password");
       } else {
-        setError('An error occurred. Please try again.');
+        setError("An error occurred. Please try again.");
       }
     }
   };
