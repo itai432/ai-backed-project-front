@@ -20,7 +20,7 @@ const HomePage = () => {
   const handleSubmit = async () => {
     const dbTokenItem = localStorage.getItem("db_token");
     const dbToken = dbTokenItem ? JSON.parse(dbTokenItem).token : null;
-  
+
     if (dbToken !== "TRUE") {
       const errorMessage: Message = {
         type: "error",
@@ -30,10 +30,10 @@ const HomePage = () => {
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
       return;
     }
-  
+
     setLoading(true);
     setError(null);
-  
+
     const userMessage: Message = {
       type: "user",
       content: userInput,
@@ -43,7 +43,7 @@ const HomePage = () => {
     await askChatGPT(userInput, setLoading, setMessages);
     setUserInput("");
   };
-  
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -79,14 +79,26 @@ const HomePage = () => {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`chat-message ${message.type === 'user' ? 'sent' : message.type === 'error' ? 'error' : 'received'}`} // נוסיף עיצוב מיוחד לשגיאות
+              className={`chat-message ${
+                message.type === "user"
+                  ? "sent"
+                  : message.type === "error"
+                  ? "error"
+                  : "received"
+              }`} // נוסיף עיצוב מיוחד לשגיאות
               ref={index === messages.length - 1 ? lastMessageRef : null}
             >
               <div className="message-sender">
-                {message.type === 'user' ? 'Me' : message.type === 'error' ? 'System' : 'ChatGPT'}
+                {message.type === "user"
+                  ? "Me"
+                  : message.type === "error"
+                  ? "System"
+                  : "ChatGPT"}
               </div>
               <div className="message-time">{message.timestamp}</div>
-              <div className="message-text">{message.content}</div>
+              <div className="message-text">
+                <pre>{message.content}</pre>
+              </div>{" "}
             </div>
           ))}
         </div>

@@ -98,7 +98,6 @@ export const askChatGPT = async (
       throw new Error("No data received from server");
     }
 
-    console.log(response.data);
     
     const chatGPTMessage: Message = {
       type: "chatgpt",
