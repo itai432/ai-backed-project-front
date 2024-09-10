@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { askChatGPT } from "../services/authService";
 import { FaDatabase } from "react-icons/fa";
 import "../style/HomePage.scss";
 
 export interface Message {
-  type: "user" | "chatgpt";
+  type: "user" | "chatgpt" | "error";
   content: string;
   timestamp: string;
 }
@@ -18,14 +18,22 @@ const HomePage = () => {
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async () => {
-    const dbConnected = localStorage.getItem("dbConnected");
-
-    if (dbConnected !== "true") {
-      setError("Please connect to the database before sending messages.");
+    const dbTokenItem = localStorage.getItem("db_token");
+    const dbToken = dbTokenItem ? JSON.parse(dbTokenItem).token : null;
+  
+    if (dbToken !== "TRUE") {
+      const errorMessage: Message = {
+        type: "error",
+        content: "Please connect to the database before sending messages.",
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
       return;
     }
+  
     setLoading(true);
     setError(null);
+  
     const userMessage: Message = {
       type: "user",
       content: userInput,
@@ -35,7 +43,7 @@ const HomePage = () => {
     await askChatGPT(userInput, setLoading, setMessages);
     setUserInput("");
   };
-
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -71,11 +79,11 @@ const HomePage = () => {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`chat-message ${message.type === 'user' ? 'sent' : 'received'}`}
+              className={`chat-message ${message.type === 'user' ? 'sent' : message.type === 'error' ? 'error' : 'received'}`} // נוסיף עיצוב מיוחד לשגיאות
               ref={index === messages.length - 1 ? lastMessageRef : null}
             >
               <div className="message-sender">
-                {message.type === 'user' ? 'Me' : 'ChatGPT'}
+                {message.type === 'user' ? 'Me' : message.type === 'error' ? 'System' : 'ChatGPT'}
               </div>
               <div className="message-time">{message.timestamp}</div>
               <div className="message-text">{message.content}</div>
@@ -93,7 +101,6 @@ const HomePage = () => {
             {loading ? "Sending..." : "SEND"}
           </button>
         </div>
-        {error && <div className="error-message">{error}</div>}
       </div>
     </div>
   );

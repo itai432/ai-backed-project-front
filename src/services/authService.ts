@@ -4,11 +4,11 @@ import { Message } from '../pages/HomePage';
 
 
 export const register = (email: string, username: string, password: string) => {
-  return axios.post(`/register`, { email, username, password });
+  return axios.post(`http://localhost:8080/api/register`, { email, username, password });
 };
 
 export const login = (username: string, password: string) => {
-  return axios.post(`/login`, { username, password });
+  return axios.post(`http://localhost:8080/api/login`, { username, password });
 };
 
 export const setTokenWithExpiry = (token: string, expiry: number) => {
@@ -41,7 +41,7 @@ export const connectToDatabase = async (url: string, username: string, password:
   try {
     const token = getToken(); 
     const response = await axios.post(
-      `/connect-db`,
+      `http://localhost:8080/connect-db`,
       {
         url,
         username,
@@ -84,7 +84,7 @@ export const askChatGPT = async (
     }
 
     const response = await axios.get(
-      "/Ask/askChatGPT",
+      "http://localhost:8080/Ask/askChatGPT",
       {
         params: { userInput },
         headers: {
@@ -93,7 +93,13 @@ export const askChatGPT = async (
         },
       }
     );
-    console.log(response);
+    
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+
+    console.log(response.data);
+    
     const chatGPTMessage: Message = {
       type: "chatgpt",
       content: response.data,
@@ -102,7 +108,12 @@ export const askChatGPT = async (
     setMessages((prevMessages) => [...prevMessages, chatGPTMessage]);
   } catch (error: any) {
     console.error("Error fetching data:", error);
+    setMessages((prevMessages) => [...prevMessages, {
+      type: "error",
+      content: "An error occurred while fetching data.",
+      timestamp: new Date().toLocaleTimeString(),
+    }]);
   } finally {
     setLoading(false);
-}
+  }
 };
